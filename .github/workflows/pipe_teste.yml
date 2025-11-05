@@ -29,6 +29,17 @@ jobs:
           push: false               # apenas build local
           tags: getting-started:latest
 
+        # 🧰 Trivy roda logo após o build
+      - name: Run Trivy scan before push
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: getting-started:latest
+          format: 'table'
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: '1'  # falha se encontrar vulnerabilidades críticas
+
       - name: Run container and test health
         run: |
           docker run -d -p 3000:3000 --name app getting-started
